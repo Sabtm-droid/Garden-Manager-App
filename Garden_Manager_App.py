@@ -5,6 +5,8 @@ import math
 
 # Team Member 2 Code, Salman, Function #2
 
-# Team Member 3 Code, Abdulrahman, Function #3&4
+# Team Member 3 Code, Abdulrahman, Function #3
 
-#Team Member 4 Code, Mohammed, Function #5
+#Team Member 4 Code, Komail, Function #4
+
+#Team Member 5 Code, Mohammed, Function #5
