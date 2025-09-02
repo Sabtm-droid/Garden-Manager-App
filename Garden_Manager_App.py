@@ -103,7 +103,7 @@ def record_plant_care():
             print("not Valid date. try again or press Enter for today date")
     
     add_new_record(pid, activity_type=activity, activity_date=activity_date)
-record_plant_care()
+#record_plant_care()
 def add_new_plant():
     # find next ID
     if len(get_plant_content()) == 0:
