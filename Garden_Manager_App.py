@@ -1,8 +1,12 @@
 # Imports
-import math
 import csv
 from datetime import datetime , timedelta
+from datetime import date
 #This is a sample of the main python file
+
+care_file_name  = r"garden_activity.csv"
+care_column_header = ["id","date", "activity"]
+activity_types = ["test1"]
 
 # Team Member 1 Code, SAlman: Function #1
 # Garden manager App
@@ -13,12 +17,9 @@ from datetime import datetime , timedelta
 # 4. Watering frequency (in days)
 # 5. Sunlight needs (Low, Medium, High)
 plant_file_name = "gardenapp.csv"
-plant_field_name = ["ID", "Name","Location","Date_acquired", "Watering_frequency", "Sunlight_needs"]
+plant_field_name = ["ID", "Plant_Name","Location","Date", "Frequency", "Sunlight_Need"]
 
 # Firstly, we will store the plants in a list of dictionaries
-import csv
-import datetime
-from datetime import date
 def new_plant ():
     plant = {}
     # plant ['ID'] = input (" Enter the unique ID of the plant")
@@ -51,14 +52,12 @@ def new_plant ():
                     pass
             print ("creating", plant_file_name)
                 
-        
         except Exception as err:
             print(err)
             print("enter valid number")
             raise
-
         
-# Name Loop 
+    # Name Loop 
     while True:
         try:
             plant ['Name'] = input ("Enter plant name/species: ")
@@ -67,17 +66,13 @@ def new_plant ():
         except:
             print("enter valid name")
 
-# Location Loop
-    
+    # Location Loop
     try:
         plant ['Location'] = input ("Enter the location of the plant")
-        
-
     except:
         print("enter valid name")
 
-# Date_acquired Loop
-    
+    # Date_acquired Loop
     while True:
             plant [ "Date_acquired"] = input("Enter Date_acquired (YYYY-MM-DD) or press Enter for today: ")
             if not plant [ "Date_acquired"].strip():  # Use today's date
@@ -118,33 +113,11 @@ def new_plant ():
         table.writeheader()
         table.writerow(plant) 
 
-# Team Member 2 Code, Abdulla, Function #2
-
-# Team Member 3 Code, Abdulrahman, Function #3&4
-
-#Team Member 4 Code, Mohammed, Function #5
-=======
-
-# Team Member 1 Code, Abulla: Function #1
-    
-# Team Member 2 Code, Salman, Function #2
-
-# Team Member 1 Code, Salman: Function #1
-
-# Team Member 2 Code, Abdulla, Function #2
-plant_file_name = r"gardenapp.csv"
-care_file_name  = r"garden_activity.csv"
-plant_column_header = ["id", "name", "date_planted", "water_freq", "sunlight"]
-care_column_header = ["id","date", "activity"]
-activity_types = ["test1"]
-import csv
-import datetime
-from datetime import date
 def get_plant_content():
     """Extract content of plant table and return it as list of dict"""
     try: 
         with open(plant_file_name, "r") as file:
-            table = csv.DictReader(file, fieldnames=plant_column_header)
+            table = csv.DictReader(file, fieldnames=plant_field_name)
             return list(table)
     except FileNotFoundError:
         print(f"file {plant_file_name} not found")
@@ -174,7 +147,7 @@ def check_id(pid):
         
         for item in get_plant_content():
             
-            if item[plant_column_header[0]] == pid:
+            if item[plant_field_name[0]] == pid:
                 
                 return True
         return False
