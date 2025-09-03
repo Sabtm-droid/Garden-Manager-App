@@ -5,8 +5,10 @@ from datetime import date
 #This is a sample of the main python file
 
 care_file_name  = r"garden_activity.csv"
-care_column_header = ["id","date", "activity"]
-activity_types = ["test1"]
+care_field_name = ["ID","Date", "Activity"]
+activity_types = ["Watering", "Fertilizing", "Repotting", "Pruning"]
+plant_file_name = "gardenapp.csv"
+plant_field_name = ["ID", "Plant_Name","Location","Date", "Frequency", "Sunlight_Need"]
 
 # Team Member 1 Code, SAlman: Function #1
 # Garden manager App
@@ -16,23 +18,19 @@ activity_types = ["test1"]
 # 3. Date acquired
 # 4. Watering frequency (in days)
 # 5. Sunlight needs (Low, Medium, High)
-plant_file_name = "gardenapp.csv"
-plant_field_name = ["ID", "Plant_Name","Location","Date", "Frequency", "Sunlight_Need"]
 
 # Firstly, we will store the plants in a list of dictionaries
 def new_plant ():
     plant = {}
     # plant ['ID'] = input (" Enter the unique ID of the plant")
-    # plant ["name"] = input("Enter plant name/species: ")
+    # plant ["Plant_Name"] = input("Enter plant name/species: ")
     # plant ["Location"] = input ("Enter the location of the plant")
     # plant [ "Date_acquired"] = input (" Enter Date acquired")
     # plant ["Watering_frequency"] = input (" Enter watering frequency in a day ")
     # plant ["Sunlight_needs"] = input (" Enter the sunlight needs: Low, Medium, High")
    
     # ID Loop
-    while True:
-    
-            
+    while True:    
         try:
             plant ['ID'] = input (" Enter the unique ID of the plant")
             
@@ -41,13 +39,13 @@ def new_plant ():
                 table = csv.DictReader(file, fieldnames=plant_field_name)
                 for item in table:
                     if item["ID"] == plant ['ID']:
+                        print("ID is exsited. Enter another one.")
                         continue 
                 break
        
         # need to fix error here 
         except FileNotFoundError:
             print(f" Error: The file was not found.")
-
             with open (plant_file_name, "w", newline = '') as file:
                     pass
             print ("creating", plant_file_name)
@@ -60,9 +58,8 @@ def new_plant ():
     # Name Loop 
     while True:
         try:
-            plant ['Name'] = input ("Enter plant name/species: ")
+            plant ['Plant_Name'] = input ("Enter plant name/species: ")
             break
-
         except:
             print("enter valid name")
 
@@ -70,25 +67,25 @@ def new_plant ():
     try:
         plant ['Location'] = input ("Enter the location of the plant")
     except:
-        print("enter valid name")
+        print("enter valid location")
 
     # Date_acquired Loop
     while True:
-            plant [ "Date_acquired"] = input("Enter Date_acquired (YYYY-MM-DD) or press Enter for today: ")
-            if not plant [ "Date_acquired"].strip():  # Use today's date
-                plant [ "Date_acquired"] = date.today().strftime("%Y-%m-%d")
+            plant [ "Date"] = input("Enter Date_acquired (YYYY-MM-DD) or press Enter for today: ")
+            if not plant [ "Date"].strip():  # Use today's date
+                plant [ "Date"] = date.today().strftime("%Y-%m-%d")
                 break
             try:
-                datetime.datetime.strptime(plant [ "Date_acquired"], "%Y-%m-%d")
+                datetime.datetime.strptime(plant [ "Date"], "%Y-%m-%d")
                 break
             except ValueError:
                 print("Invalid date format. Please use YYYY-MM-DD.")
 
-# Watering_frequency Loop
+    # Watering_frequency Loop
     while True:
         try:
-            plant ['Watering_frequency'] = input (" Enter watering frequency in a day ")
-            if int(plant ['Watering_frequency'])  >0:
+            plant ['Frequency'] = input (" Enter watering frequency in a day ")
+            if int(plant ['Frequency'])  >0:
                 break
             else:
                 print (" Write number more than zero")
@@ -96,11 +93,11 @@ def new_plant ():
         except:
             print("enter valid number")
 
-# Sunlight_needs Loop
+    # Sunlight_needs Loop
     while True:
         try:
-            plant ['Sunlight_needs'] = input (" Enter the sunlight needs: Low, Medium, High")
-            if (plant ['Sunlight_needs'])  in ('Low', 'Medium', 'High'):
+            plant ['Sunlight_Need'] = input (" Enter the sunlight needs: Low, Medium, High")
+            if (plant ['Sunlight_Need'])  in ('Low', 'Medium', 'High'):
                 break
             else:
                 print (" Write: Low, Medium, High")
@@ -130,7 +127,7 @@ def get_care_content():
     """Extract content of plant table and return it as list of dict"""
     try:    
         with open(care_file_name, "r", newline='') as file:
-            table = csv.DictReader(file, fieldnames=care_column_header)
+            table = csv.DictReader(file, fieldnames=care_field_name)
             return list(table)
     except FileNotFoundError:
         print(f"file {care_file_name} not found")
@@ -144,11 +141,8 @@ def check_id(pid):
     return True if id found or return False otherwise
     """
     try:
-        
         for item in get_plant_content():
-            
             if item[plant_field_name[0]] == pid:
-                
                 return True
         return False
     except KeyError:
@@ -160,11 +154,11 @@ def add_new_record(pid, activity_type,activity_date=None):
         activity_date = date.today().strftime("%Y-%m-%d")
     try:
         with open(care_file_name, "a", newline="") as file:
-            table = csv.DictWriter(file,fieldnames=care_column_header)
+            table = csv.DictWriter(file,fieldnames=care_field_name)
             table.writerow({
-                care_column_header[0]: pid,
-                care_column_header[2]: activity_type,
-                care_column_header[1]: activity_date
+                care_field_name[0]: pid,
+                care_field_name[2]: activity_type,
+                care_field_name[1]: activity_date
             })
     except KeyError:
         print("Error while save the file")
@@ -204,20 +198,10 @@ def record_plant_care():
             print("not Valid date. try again or press Enter for today date")
     
     add_new_record(pid, activity_type=activity, activity_date=activity_date)
-#record_plant_care()
-def add_new_plant():
-    # find next ID
-    if len(get_plant_content()) == 0:
-        pass
-    next_id = 1
-    for row in get_plant_content():
-        row["id"]
-            
 
 #Team Member 4 Code, Komail, Function #4
- def SearchPlants(name: str, location: str):
+def Search_Plants(name: str, location: str):
     ''' Search for plants from database by their name or location '''
-
     name = input("Enter the plant's name: ")
     location = input("Enter the plant's location: ")
 
@@ -225,22 +209,18 @@ def add_new_plant():
         content = csv.DictReader(file)
         for plant in content:
             # To check if matching either by name or location
-            if plant['Plant_name'] == name or plant['Location'] == location:
+            if plant['Plant_Name'] == name or plant['Location'] == location:
                 print(plant)
 
-
-# Team Member 3 Code, Abdulrahman, Function #3
-#import csv
-#Team Member 5 Code, Mohammed, Function #5
 def show():
     try:
         #This function will show all the plants in the garden
-        with open(r'C:\Users\158585\Desktop\gardenapp.csv', 'r') as file:
+        with open('gardenapp.csv', 'r') as file:
             csv1= csv.reader(file)
             for i in csv1:
                 print(i)
     except:
-        print("File does not exist!')
+        print("File does not exist!")
 
 
 def View_plants_due_for_care_per_activity():
@@ -257,7 +237,6 @@ def View_plants_due_for_care_per_activity():
     with open('garden_activity.csv', 'r', newline='') as file:
         plants_activities = list(csv.DictReader(file))
         
-
     activities = ('Watering', 'Fertilizing', 'Repotting', 'Pruning')
 
     due_plantes_list = []
@@ -302,7 +281,6 @@ def View_plants_due_for_care_per_activity():
         print(f'No plants need care, Nice Job!')
     print('-----------------------------------------------------------------------------')
 
-
 def display_menu():
     """Display the main menu options."""
     print("\n=== Garaden Manegar ===")
@@ -323,15 +301,15 @@ def main():
         choice = display_menu()
 
         if choice == '1':
-            function_1()
+            new_plant()
         elif choice == '2':
-            function_2()
+            record_plant_care()
         elif choice == '3':
             View_plants_due_for_care_per_activity()
         elif choice == '4':
-            function_4()
+            Search_Plants()
         elif choice == '5':
-            function_5()
+            show()
         elif choice == '6':
             print("Thank you for using Garaden Manegar. Goodbye!")
             break
