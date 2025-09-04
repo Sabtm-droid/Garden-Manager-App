@@ -5,7 +5,7 @@ from datetime import date
 #This is a sample of the main python file
 
 care_file_name  = r"garden_activity.csv"
-care_field_name = ["ID","Date", "Activity"]
+care_field_name = ["ID","Date", "Activity","image_path"]
 activity_types = ["watering", "fertilizing", "repotting", "pruning","image"]
 plant_file_name = "gardenapp.csv"
 plant_field_name = ["ID", "Plant_Name","Location","Date", "Frequency", "Sunlight_Need"]
@@ -149,7 +149,7 @@ def check_id(pid):
         print("Error while process the files")
         return False
 
-def add_new_record(pid, activity_type,activity_date=None):
+def add_new_record(pid, activity_type,activity_date=None, image_path=''):
     if activity_date == None: # if no date provided use current date
         activity_date = date.today().strftime("%Y-%m-%d")
     try:
@@ -158,7 +158,8 @@ def add_new_record(pid, activity_type,activity_date=None):
             table.writerow({
                 care_field_name[0]: pid,
                 care_field_name[2]: activity_type,
-                care_field_name[1]: activity_date
+                care_field_name[1]: activity_date,
+                "image_path":image_path
             })
     except KeyError:
         print("Error while save the file")
@@ -168,7 +169,7 @@ def add_new_record(pid, activity_type,activity_date=None):
                       )
 def record_plant_care():
     """allow user to record activity for plants"""
-    
+
     activity_type=''
     while True: #ID loop
         pid = input("Enter plant ID: ").strip()
@@ -196,9 +197,18 @@ def record_plant_care():
         except Exception as e:
             
             print("not Valid date. try again or press Enter for today date")
-    
-    add_new_record(pid, activity_type=activity, activity_date=activity_date)
+    image_path = ""
+    if activity == "image" :
+        while True : #image loop
+            try:
+                image_path = input("Enter image path")
+                with open(image_path, "r") as file: # chack if image exist
+                    break
+            except:
+                print("Enter valid image path")
 
+    add_new_record(pid, activity_type=activity, activity_date=activity_date,
+                   image_path=image_path)
 #Team Member 4 Code, Komail, Function #4
 def Search_Plants():
     ''' Search for plants from database by their name or location '''
