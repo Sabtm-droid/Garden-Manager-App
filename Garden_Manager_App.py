@@ -36,15 +36,23 @@ def new_plant ():
     while True:
         try:
             plant ['Plant_Name'] = input ("Enter plant name/species: ")
-            break
+            if plant ['Plant_Name'].strip() != "":
+                break
+            else:
+                print("name cannot be empty")
         except:
             print("enter valid name")
 
     # Location 
-    try:
-        plant ['Location'] = input ("Enter the location of the plant")
-    except:
-        print("enter valid location")
+    while True:
+        try:
+            plant ['Location'] = input ("Enter the location of the plant")
+            if plant ['Location'].strip() != "":
+                    break
+            else:
+                print("location cannot be empty")
+        except:
+            print("enter valid location")
 
     # Date_acquired Loop
     while True:
