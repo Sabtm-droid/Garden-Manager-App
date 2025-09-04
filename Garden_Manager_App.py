@@ -29,31 +29,8 @@ def new_plant ():
     # plant ["Watering_frequency"] = input (" Enter watering frequency in a day ")
     # plant ["Sunlight_needs"] = input (" Enter the sunlight needs: Low, Medium, High")
    
-    # ID Loop
-    while True:    
-        try:
-            plant ['ID'] = input (" Enter the unique ID of the plant")
-            
-            int(plant ['ID']) 
-            with open(plant_file_name, "r") as file:
-                table = csv.DictReader(file, fieldnames=plant_field_name)
-                for item in table:
-                    if item["ID"] == plant ['ID']:
-                        print("ID is exsited. Enter another one.")
-                        continue 
-                break
-       
-        # need to fix error here 
-        except FileNotFoundError:
-            print(f" Error: The file was not found.")
-            with open (plant_file_name, "w", newline = '') as file:
-                    pass
-            print ("creating", plant_file_name)
-                
-        except Exception as err:
-            print(err)
-            print("enter valid number")
-            raise
+    # ID 
+    plant ['ID'] =nextID()
         
     # Name Loop 
     while True:
@@ -135,7 +112,16 @@ def get_care_content():
             pass
         print("creating", care_file_name)
         return []
-        
+def nextID():
+    """Find next ID based on CSV table"""
+    last_id = 0 
+    for item in get_plant_content():
+        try:
+            if int(item[plant_field_name[0]]) > last_id:
+                last_id = int(item[plant_field_name[0]])
+        except:
+            pass
+    return last_id + 1      
 def check_id(pid):
     """check if plant ID exist in table
     return True if id found or return False otherwise
