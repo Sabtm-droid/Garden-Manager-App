@@ -6,7 +6,7 @@ from datetime import date
 
 care_file_name  = r"garden_activity.csv"
 care_field_name = ["ID","Date", "Activity"]
-activity_types = ["Watering", "Fertilizing", "Repotting", "Pruning"]
+activity_types = ["watering", "fertilizing", "repotting", "pruning","image"]
 plant_file_name = "gardenapp.csv"
 plant_field_name = ["ID", "Plant_Name","Location","Date", "Frequency", "Sunlight_Need"]
 
@@ -76,7 +76,7 @@ def new_plant ():
                 plant [ "Date"] = date.today().strftime("%Y-%m-%d")
                 break
             try:
-                datetime.datetime.strptime(plant [ "Date"], "%Y-%m-%d")
+                datetime.strptime(plant [ "Date"], "%Y-%m-%d")
                 break
             except ValueError:
                 print("Invalid date format. Please use YYYY-MM-DD.")
@@ -105,9 +105,9 @@ def new_plant ():
         except:
             print("enter valid name")
 
-    with open(plant_file_name, "w") as file:
+    with open(plant_file_name, "a", newline="") as file:
         table = csv.DictWriter(file, fieldnames = plant_field_name)
-        table.writeheader()
+        #table.writeheader()
         table.writerow(plant) 
 
 def get_plant_content():
@@ -191,7 +191,7 @@ def record_plant_care():
                 activity_date = date.today().strftime("%Y-%m-%d")
                 break
             else:
-                activity_date = datetime.datetime.strptime(user_date, "%Y-%m-%d").strftime("%Y-%m-%d")
+                activity_date = datetime.strptime(user_date, "%Y-%m-%d").strftime("%Y-%m-%d")
                 break
         except Exception as e:
             
@@ -200,7 +200,7 @@ def record_plant_care():
     add_new_record(pid, activity_type=activity, activity_date=activity_date)
 
 #Team Member 4 Code, Komail, Function #4
-def Search_Plants(name: str, location: str):
+def Search_Plants():
     ''' Search for plants from database by their name or location '''
     name = input("Enter the plant's name: ")
     location = input("Enter the plant's location: ")
