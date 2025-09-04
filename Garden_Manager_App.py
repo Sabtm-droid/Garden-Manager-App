@@ -63,7 +63,7 @@ def new_plant ():
         except:
             print("enter valid name")
 
-    # Location Loop
+    # Location 
     try:
         plant ['Location'] = input ("Enter the location of the plant")
     except:
@@ -97,7 +97,7 @@ def new_plant ():
     while True:
         try:
             plant ['Sunlight_Need'] = input (" Enter the sunlight needs: Low, Medium, High")
-            if (plant ['Sunlight_Need'])  in ('Low', 'Medium', 'High'):
+            if (plant ['Sunlight_Need'].strip().lower())  in ('low', 'medium', 'high'):
                 break
             else:
                 print (" Write: Low, Medium, High")
