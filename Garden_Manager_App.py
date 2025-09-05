@@ -5,8 +5,8 @@ from datetime import date
 #This is a sample of the main python file
 
 care_file_name  = r"garden_activity.csv"
-care_field_name = ["ID","Date", "Activity"]
-activity_types = ["Watering", "Fertilizing", "Repotting", "Pruning"]
+care_field_name = ["ID","Date", "Activity","image_path"]
+activity_types = ["watering", "fertilizing", "repotting", "pruning","image"]
 plant_file_name = "gardenapp.csv"
 plant_field_name = ["ID", "Plant_Name","Location","Date", "Frequency", "Sunlight_Need"]
 
@@ -29,45 +29,30 @@ def new_plant ():
     # plant ["Watering_frequency"] = input (" Enter watering frequency in a day ")
     # plant ["Sunlight_needs"] = input (" Enter the sunlight needs: Low, Medium, High")
    
-    # ID Loop
-    while True:    
-        try:
-            plant ['ID'] = input (" Enter the unique ID of the plant")
-            
-            int(plant ['ID']) 
-            with open(plant_file_name, "r") as file:
-                table = csv.DictReader(file, fieldnames=plant_field_name)
-                for item in table:
-                    if item["ID"] == plant ['ID']:
-                        print("ID is exsited. Enter another one.")
-                        continue 
-                break
-       
-        # need to fix error here 
-        except FileNotFoundError:
-            print(f" Error: The file was not found.")
-            with open (plant_file_name, "w", newline = '') as file:
-                    pass
-            print ("creating", plant_file_name)
-                
-        except Exception as err:
-            print(err)
-            print("enter valid number")
-            raise
+    # ID 
+    plant ['ID'] =nextID()
         
     # Name Loop 
     while True:
         try:
             plant ['Plant_Name'] = input ("Enter plant name/species: ")
-            break
+            if plant ['Plant_Name'].strip() != "":
+                break
+            else:
+                print("name cannot be empty")
         except:
             print("enter valid name")
 
-    # Location Loop
-    try:
-        plant ['Location'] = input ("Enter the location of the plant")
-    except:
-        print("enter valid location")
+    # Location 
+    while True:
+        try:
+            plant ['Location'] = input ("Enter the location of the plant")
+            if plant ['Location'].strip() != "":
+                    break
+            else:
+                print("location cannot be empty")
+        except:
+            print("enter valid location")
 
     # Date_acquired Loop
     while True:
@@ -76,7 +61,7 @@ def new_plant ():
                 plant [ "Date"] = date.today().strftime("%Y-%m-%d")
                 break
             try:
-                datetime.datetime.strptime(plant [ "Date"], "%Y-%m-%d")
+                datetime.strptime(plant [ "Date"], "%Y-%m-%d")
                 break
             except ValueError:
                 print("Invalid date format. Please use YYYY-MM-DD.")
@@ -97,7 +82,7 @@ def new_plant ():
     while True:
         try:
             plant ['Sunlight_Need'] = input (" Enter the sunlight needs: Low, Medium, High")
-            if (plant ['Sunlight_Need'])  in ('Low', 'Medium', 'High'):
+            if (plant ['Sunlight_Need'].strip().lower())  in ('low', 'medium', 'high'):
                 break
             else:
                 print (" Write: Low, Medium, High")
@@ -105,9 +90,9 @@ def new_plant ():
         except:
             print("enter valid name")
 
-    with open(plant_file_name, "w") as file:
+    with open(plant_file_name, "a", newline="") as file:
         table = csv.DictWriter(file, fieldnames = plant_field_name)
-        table.writeheader()
+        #table.writeheader()
         table.writerow(plant) 
 
 def get_plant_content():
@@ -135,7 +120,16 @@ def get_care_content():
             pass
         print("creating", care_file_name)
         return []
-        
+def nextID():
+    """Find next ID based on CSV table"""
+    last_id = 0 
+    for item in get_plant_content():
+        try:
+            if int(item[plant_field_name[0]]) > last_id:
+                last_id = int(item[plant_field_name[0]])
+        except:
+            pass
+    return last_id + 1      
 def check_id(pid):
     """check if plant ID exist in table
     return True if id found or return False otherwise
@@ -149,7 +143,7 @@ def check_id(pid):
         print("Error while process the files")
         return False
 
-def add_new_record(pid, activity_type,activity_date=None):
+def add_new_record(pid, activity_type,activity_date=None, image_path=''):
     if activity_date == None: # if no date provided use current date
         activity_date = date.today().strftime("%Y-%m-%d")
     try:
@@ -158,7 +152,8 @@ def add_new_record(pid, activity_type,activity_date=None):
             table.writerow({
                 care_field_name[0]: pid,
                 care_field_name[2]: activity_type,
-                care_field_name[1]: activity_date
+                care_field_name[1]: activity_date,
+                "image_path":image_path
             })
     except KeyError:
         print("Error while save the file")
@@ -168,7 +163,7 @@ def add_new_record(pid, activity_type,activity_date=None):
                       )
 def record_plant_care():
     """allow user to record activity for plants"""
-    
+
     activity_type=''
     while True: #ID loop
         pid = input("Enter plant ID: ").strip()
@@ -191,16 +186,25 @@ def record_plant_care():
                 activity_date = date.today().strftime("%Y-%m-%d")
                 break
             else:
-                activity_date = datetime.datetime.strptime(user_date, "%Y-%m-%d").strftime("%Y-%m-%d")
+                activity_date = datetime.strptime(user_date, "%Y-%m-%d").strftime("%Y-%m-%d")
                 break
         except Exception as e:
             
             print("not Valid date. try again or press Enter for today date")
-    
-    add_new_record(pid, activity_type=activity, activity_date=activity_date)
+    image_path = ""
+    if activity == "image" :
+        while True : #image loop
+            try:
+                image_path = input("Enter image path")
+                with open(image_path, "r") as file: # chack if image exist
+                    break
+            except:
+                print("Enter valid image path")
 
+    add_new_record(pid, activity_type=activity, activity_date=activity_date,
+                   image_path=image_path)
 #Team Member 4 Code, Komail, Function #4
-def Search_Plants(name: str, location: str):
+def Search_Plants():
     ''' Search for plants from database by their name or location '''
     name = input("Enter the plant's name: ")
     location = input("Enter the plant's location: ")
