@@ -6,7 +6,7 @@ from tabulate import tabulate
 #This is a sample of the main python file
 
 # Initializing Lists
-care_file_name  = "garden_activity.csv"
+care_file_name  = r"garden_activity.csv"
 care_field_name = ["ID","Date", "Activity","image_path"]
 activity_types = ["watering", "fertilizing", "repotting", "pruning","image"]
 
@@ -283,8 +283,6 @@ def new_plant():
 
     print("\033[1;32;48m Your plant has been added successfully!\033[0m")
 
-
-
 def nextID():
     """Find next ID based on CSV table"""
     last_id = 0 
@@ -325,8 +323,6 @@ def get_care_content():
             pass
         print(f"{care_file_name} is created.")
         return []
-
-
 
 def check_id(pid):
     """
@@ -497,6 +493,7 @@ def Search_Plants():
 # =====================================
 def show():
     try:
+
         # Abdulrahman added this to make the resault pretty 
         #with open("gardenapp.csv", "r") as file:
         #    reader = csv.reader(file)
@@ -511,11 +508,13 @@ def show():
 
         #This function will show all the plants in the garden
         
+        #This function will show all the plants in the garden
+
         with open('gardenapp.csv', 'r') as file:
             csv1= csv.reader(file)
             for i in csv1:
                 print(i)
-        
+
         for item in get_care_content():
             if item["Activity"] != "image":
                 print(f'plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
@@ -526,6 +525,43 @@ def show():
                 display(Image(filename=item["image_path"]))
     except:
         print("\033[1;31;48m File does not exist!\033[0m")
+
+
+# =====================================     
+# Team Member 4 Code, Komail: Strech #1
+# ===================================== 
+def add_plant_length(pid: int, length: float):
+    ''' To add plant length to the main CSV file'''
+    with open('gardenapp.csv', 'r') as file:
+        content = csv.DictReader(file)
+        for plant in content:
+            if plant['ID'] == pid:
+                plant['length'] = length
+
+# NOT COMPLETED
+
+# =====================================     
+# Team Member 2 Code, Abdulla: Strech #3
+# =====================================     
+def add_new_record(pid, activity_type,activity_date=None, image_path=''):
+    # ADD DOC string
+    
+    if activity_date == None: # if no date provided use current date
+        activity_date = date.today().strftime("%Y-%m-%d")
+    try:
+        with open(care_file_name, "a", newline="") as file:
+            table = csv.DictWriter(file,fieldnames=care_field_name)
+            table.writerow({
+                care_field_name[0]: pid,
+                care_field_name[2]: activity_type,
+                care_field_name[1]: activity_date,
+                "image_path":image_path
+            })
+    except KeyError:
+        print("\033[1;31;48m Error while save the file.\033[0m")
+    except FileNotFoundError:
+        print(f"creating {care_file_name}")
+        add_new_record(pid, activity_type,activity_date)
 
 # =====================================     
 # Team Member 4 Code, Komail: Strech #1
@@ -568,7 +604,7 @@ def add_new_record(pid, activity_type,activity_date=None, image_path=''):
 # =====================================
 def plant_diagnoses():
     print("Welcome to diagnose common plant problems!")
-
+    
     while True:
         print("\n Plant Diagnosis System ")
         print("1. Yellow leaves")
@@ -644,6 +680,7 @@ def main():
         elif choice == '7':
             plant_diagnoses()
         elif choice == '8':
+
             print("\nThank you for using Garaden Manegar. Goodbye!")
             break
         else:
