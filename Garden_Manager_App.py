@@ -3,7 +3,6 @@ import csv
 from datetime import datetime , timedelta, date
 from IPython.display import Image, display
 from tabulate import tabulate
-#This is a sample of the main python file
 
 # Initializing Lists
 care_file_name  = r"garden_activity.csv"
@@ -508,8 +507,6 @@ def show():
 
         #This function will show all the plants in the garden
         
-        #This function will show all the plants in the garden
-
         with open('gardenapp.csv', 'r') as file:
             csv1= csv.reader(file)
             for i in csv1:
@@ -538,49 +535,13 @@ def add_plant_length(pid: int, length: float):
             if plant['ID'] == pid:
                 plant['length'] = length
 
-# NOT COMPLETED
+# Needs mechanism to determine how the length is changing, either by time, care records, or plant type
 
 # =====================================     
 # Team Member 2 Code, Abdulla: Strech #3
 # =====================================     
 def add_new_record(pid, activity_type,activity_date=None, image_path=''):
-    # ADD DOC string
-    
-    if activity_date == None: # if no date provided use current date
-        activity_date = date.today().strftime("%Y-%m-%d")
-    try:
-        with open(care_file_name, "a", newline="") as file:
-            table = csv.DictWriter(file,fieldnames=care_field_name)
-            table.writerow({
-                care_field_name[0]: pid,
-                care_field_name[2]: activity_type,
-                care_field_name[1]: activity_date,
-                "image_path":image_path
-            })
-    except KeyError:
-        print("\033[1;31;48m Error while save the file.\033[0m")
-    except FileNotFoundError:
-        print(f"creating {care_file_name}")
-        add_new_record(pid, activity_type,activity_date)
-
-# =====================================     
-# Team Member 4 Code, Komail: Strech #1
-# ===================================== 
-def add_plant_length(pid: int, length: float):
-    ''' To add plant length to the main CSV file'''
-    with open('gardenapp.csv', 'r') as file:
-        content = csv.DictReader(file)
-        for plant in content:
-            if plant['ID'] == pid:
-                plant['length'] = length
-
-# NOT COMPLETED
-
-# =====================================     
-# Team Member 2 Code, Abdulla: Strech #3
-# =====================================     
-def add_new_record(pid, activity_type,activity_date=None, image_path=''):
-    # ADD DOC string
+    """ This function updates the care CSV file by taking the inputs from user."""
     
     if activity_date == None: # if no date provided use current date
         activity_date = date.today().strftime("%Y-%m-%d")
@@ -680,8 +641,7 @@ def main():
         elif choice == '7':
             plant_diagnoses()
         elif choice == '8':
-
             print("\nThank you for using Garaden Manegar. Goodbye!")
             break
         else:
-            print("\nInvalid choice. Please enter a number between 1 and 6.")
+            print("\nInvalid choice. Please enter a number between 1 and 8.")
