@@ -86,6 +86,23 @@ def new_plant():
 
     print("\033[1;32;48m Your plant has been added successfully!\033[0m")
     
+
+
+def nextID():
+    """Find next ID based on CSV table"""
+    last_id = 0 
+    for item in get_plant_content():
+        try:
+            if int(item[plant_field_name[0]]) > last_id:
+                last_id = int(item[plant_field_name[0]])
+        except:
+            pass
+    return last_id + 1
+
+# =====================================     
+# Team Member 2 Code, Abdulla: Function #2
+# =====================================  
+
 def get_plant_content():
     """Extract content of plant table and return it as list of dict"""
     try: 
@@ -112,16 +129,7 @@ def get_care_content():
         print(f"{care_file_name} is created.")
         return []
 
-def nextID():
-    """Find next ID based on CSV table"""
-    last_id = 0 
-    for item in get_plant_content():
-        try:
-            if int(item[plant_field_name[0]]) > last_id:
-                last_id = int(item[plant_field_name[0]])
-        except:
-            pass
-    return last_id + 1
+
 
 def check_id(pid):
     """
@@ -136,11 +144,6 @@ def check_id(pid):
     except KeyError:
         print("\033[1;31;48m Error while process the files.\033[0m")
         return False
-
-
-# =====================================     
-# Team Member 2 Code, Abdulla: Function #2
-# =====================================  
 
 def nextavailablefilename():
     """find available image name to avoid name conflict"""
