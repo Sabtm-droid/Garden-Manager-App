@@ -140,7 +140,12 @@ def check_id(pid):
 
 # =====================================     
 # Team Member 2 Code, Abdulla: Function #2
-# =====================================     
+# =====================================  
+
+def nextavailablefilename():
+    """find available image name to avoid name conflict"""
+    return "image"+str(len(get_care_content())+1)
+   
 def record_plant_care():
     """allow user to record activity for plants"""
 
@@ -176,9 +181,13 @@ def record_plant_care():
         while True : #image loop
             try:
                 image_path = input("Enter image path")
-                with open(image_path, "r") as file: # check if image exists
+                with open(image_path, "rb") as original: # check if image exists
+                    extension  = image_path.split(".")[-1]
+                    new_image_path = "./images/"+nextavailablefilename()+ "." + extension
+                    with open(new_image_path, "wb") as copy:
+                        copy.write(original.read())
                     break
-            except:
+            except FileNotFoundError:
                 print("\033[1;31;48m Enter valid image path.\033[0m")
 
     add_new_record(pid, activity_type=activity, activity_date=activity_date,
@@ -298,7 +307,7 @@ def show():
                 print(f'plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
         print("image gallery")
         for item in get_care_content():
-            if item["Activity"] != "image" and item["image_path"] != '':
+            if item["Activity"] == "image" and item["image_path"].strip() != '':
                 print(f'image for plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
                 display(Image(filename=item["image_path"]))
     except:
