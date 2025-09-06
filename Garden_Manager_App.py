@@ -2,14 +2,199 @@
 import csv
 from datetime import datetime , timedelta, date
 from IPython.display import Image, display
+from tabulate import tabulate
 #This is a sample of the main python file
 
 # Initializing Lists
 care_file_name  = r"garden_activity.csv"
 care_field_name = ["ID","Date", "Activity","image_path"]
 activity_types = ["watering", "fertilizing", "repotting", "pruning","image"]
+
 plant_file_name = "gardenapp.csv"
 plant_field_name = ["ID", "Plant_Name","Location","Date", "Frequency", "Sunlight_Need"]
+
+seasonal_changes_file_name = 'seasonal_changes.csv'
+seasonal_changes_field_name = ["ID","Hot_Season", "Cool_Season","Transitions"]
+seasons_months = {
+    'Cool': ['Dec', 'Jan', 'Feb'],
+    'Hot':['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep','Oct'],
+    'Transitions': ['Mar', 'Nov']
+    }
+
+# =====================================     
+# Team Member 3 Code, Abdulrahman: Strech #2, #4 and extra needed for it to work
+# ===================================== 
+def update_plant_frequencies():
+    '''This function updates the frequency of each plant, based on the season 
+    and notifies the user if so; creates Seasonal_Changes.csv if not found.'''
+
+    seasonal_dict = {}
+
+    # Try reading Seasonal_Changes.csv, if not found create it with defaults
+    try:
+        with open(seasonal_changes_file_name, newline="") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                seasonal_dict[row["ID"]] = {
+                    "Hot": int(row["Hot_Season"]),
+                    "Cool": int(row["Cool_Season"]),
+                    "Transitions": int(row["Transitions"])
+                }
+    except FileNotFoundError:
+        # File missing → create with plants frequencies
+        with open(plant_file_name, newline="") as plants_file:
+            plant_reader = csv.DictReader(plants_file)
+            plant_rows = list(plant_reader)
+
+        with open(seasonal_changes_file_name, "w", newline="") as season_file:
+            fieldnames = ["ID", "Hot_Season", "Cool_Season", "Transitions"]
+            writer = csv.DictWriter(season_file, fieldnames=fieldnames)
+            writer.writeheader()
+            for plant in plant_rows:
+                pid = plant["ID"]
+                base_freq = plant["Frequency"]  # use plant's frequency as default
+                writer.writerow({
+                    "ID": pid,
+                    "Hot_Season": base_freq,
+                    "Cool_Season": base_freq,
+                    "Transitions": base_freq
+                })
+        print("Seasonal_Changes.csv created with plant frequencies as defaults.")
+        return  # no need to continue, since there is nothing to update
+
+    updated_plants = []
+    #get the current month
+    current_month = datetime.now().strftime("%b")
+
+    with open(plant_file_name, newline="") as file:
+        reader = csv.DictReader(file)
+        fieldnames = reader.fieldnames
+        for plant in reader:
+            plant_id = plant["ID"]
+            current_freq = int(plant["Frequency"])  # existing frequency
+            new_freq = current_freq  # default to current
+
+            if plant_id in seasonal_dict:
+                season_freqs = seasonal_dict[plant_id]
+                # Determine season
+                current_season = None
+                for season, months in seasons_months.items():
+                    if current_month in months:
+                        current_season = season
+                        new_freq = season_freqs[season]
+                        break
+
+                # Update only if different
+                if current_freq != new_freq:
+                    plant["Frequency"] = new_freq
+                    print(f"\nNote: Plant ID {plant_id} frequency changed to {new_freq} ({current_season} season)\n")
+
+            updated_plants.append(plant)
+
+    #Write updated plants back to CSV
+    with open(plant_file_name, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(updated_plants)
+
+def get_int_larger_then_zero(quastion):
+    '''Checks if the input is a number larger then zero'''
+    while True:
+        try:
+            value = int(input(quastion))
+            if value > 0:
+                return value
+            else:
+                print("The number must be greater than 0.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+def add_seasonal_change(id_value, freq, answer):
+    '''Add a seasonal changes to the frequency, if the user want to add,
+       the user can choose a frequency for each season, 
+       else all seasons will have the previously inputed frequency'''
+
+    with open(seasonal_changes_file_name, "a", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=seasonal_changes_field_name)
+
+        # If file is empty, write header
+        if file.tell() == 0:
+            writer.writeheader()
+
+        if answer.lower() in ("no", "n"):
+            # All columns = freq
+            row = {
+                "ID": id_value,
+                "Hot_Season": freq,
+                "Cool_Season": freq,
+                "Transitions": freq
+            }
+            writer.writerow(row)
+
+        else:
+            # Ask user for each seasonal frequency
+            hot = get_int_larger_then_zero("Enter frequency for hot seasons: ")
+            cool = get_int_larger_then_zero("Enter frequency for cool seasons: ")
+            transitions = get_int_larger_then_zero("Enter frequency for transitions between seasons: ")
+
+            row = {
+                "ID": id_value,
+                "Hot_Season": hot,
+                "Cool_Season": cool,
+                "Transitions": transitions
+            }
+            writer.writerow(row)
+
+def update_season_care_freq():
+    '''Enables the user to update seasonal frequency for each season for the choosen plant id by the user'''
+
+    rows = []
+    found = False   # To track if ID exists in Seasonal_Changes.csv
+
+    while True:  # ID input while checking ig it exist in the main table
+        p_id = input("Enter plant ID: ").strip()
+        if check_id(p_id):
+            break
+        else:
+            print("Plant not found in Plants.csv. Please try again.")
+
+    # Ask user for each seasonal frequency
+    u_hot = get_int_larger_then_zero("Enter frequency for hot seasons: ")
+    u_cool = get_int_larger_then_zero("Enter frequency for cool seasons: ")
+    u_transitions = get_int_larger_then_zero("Enter frequency for transitions between seasons: ")
+
+    # Read all rows into rows list
+    with open(seasonal_changes_file_name, 'r', newline='') as file:
+        reader = csv.DictReader(file)
+        fieldnames = reader.fieldnames
+
+        for row in reader:
+            if row['ID'] == str(p_id):   # Match ID
+                row['Hot_Season'] = u_hot
+                row['Cool_Season'] = u_cool
+                row['Transitions'] = u_transitions
+                found = True
+            rows.append(row)
+
+    # If not found, append new row
+    if not found:
+        rows.append({
+            "ID": p_id,
+            "Hot_Season": u_hot,
+            "Cool_Season": u_cool,
+            "Transitions": u_transitions
+        })
+
+    # Write everything back
+    with open(seasonal_changes_file_name, 'w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    if found:
+        print(f"Updated seasonal care for Plant ID {p_id}")
+    else:
+        print(f"Added new seasonal care record for Plant ID {p_id}")
 
 # =====================================
 # Team Member 1 Code, Salman: Function #1
@@ -78,6 +263,18 @@ def new_plant():
         except:
             print("\033[1;31;48m ERROR: Enter a valid number!\033[0m")
 
+# =====================================     
+# Team Member 3 Code, Abdulrahman: added this for the strech #4
+# ===================================== 
+    while True:
+        answer = input('Do you want to add seasonal care schedules?(yes or no): ')
+        if answer.strip().lower() in ('yes', 'no', 'y', 'n'):
+            add_seasonal_change(id_value = plant['ID'], freq = plant['Frequency'], answer = answer)
+            break
+        else:
+            print("Invalid answer. Please enter yes or no.")
+# ===================================== 
+
     # Appending plant's data into the CSV file
     with open(plant_file_name, "a", newline="") as file:
         table = csv.DictWriter(file, fieldnames = plant_field_name)
@@ -85,8 +282,6 @@ def new_plant():
         table.writerow(plant) 
 
     print("\033[1;32;48m Your plant has been added successfully!\033[0m")
-    
-
 
 def nextID():
     """Find next ID based on CSV table"""
@@ -128,8 +323,6 @@ def get_care_content():
             pass
         print(f"{care_file_name} is created.")
         return []
-
-
 
 def check_id(pid):
     """
@@ -300,11 +493,28 @@ def Search_Plants():
 # =====================================
 def show():
     try:
+
+        # Abdulrahman added this to make the resault pretty 
+        #with open("gardenapp.csv", "r") as file:
+        #    reader = csv.reader(file)
+        #    rows = list(reader)
+
+        # First row is usually the header
+        #headers = rows[0]
+        #data = rows[1:]
+
+        # Print formatted table
+        #print(tabulate(data, headers=headers, tablefmt="pretty"))
+
         #This function will show all the plants in the garden
+        
+        #This function will show all the plants in the garden
+
         with open('gardenapp.csv', 'r') as file:
             csv1= csv.reader(file)
             for i in csv1:
                 print(i)
+
         for item in get_care_content():
             if item["Activity"] != "image":
                 print(f'plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
@@ -315,6 +525,43 @@ def show():
                 display(Image(filename=item["image_path"]))
     except:
         print("\033[1;31;48m File does not exist!\033[0m")
+
+
+# =====================================     
+# Team Member 4 Code, Komail: Strech #1
+# ===================================== 
+def add_plant_length(pid: int, length: float):
+    ''' To add plant length to the main CSV file'''
+    with open('gardenapp.csv', 'r') as file:
+        content = csv.DictReader(file)
+        for plant in content:
+            if plant['ID'] == pid:
+                plant['length'] = length
+
+# NOT COMPLETED
+
+# =====================================     
+# Team Member 2 Code, Abdulla: Strech #3
+# =====================================     
+def add_new_record(pid, activity_type,activity_date=None, image_path=''):
+    # ADD DOC string
+    
+    if activity_date == None: # if no date provided use current date
+        activity_date = date.today().strftime("%Y-%m-%d")
+    try:
+        with open(care_file_name, "a", newline="") as file:
+            table = csv.DictWriter(file,fieldnames=care_field_name)
+            table.writerow({
+                care_field_name[0]: pid,
+                care_field_name[2]: activity_type,
+                care_field_name[1]: activity_date,
+                "image_path":image_path
+            })
+    except KeyError:
+        print("\033[1;31;48m Error while save the file.\033[0m")
+    except FileNotFoundError:
+        print(f"creating {care_file_name}")
+        add_new_record(pid, activity_type,activity_date)
 
 # =====================================     
 # Team Member 4 Code, Komail: Strech #1
@@ -357,7 +604,7 @@ def add_new_record(pid, activity_type,activity_date=None, image_path=''):
 # =====================================
 def plant_diagnoses():
     print("Welcome to diagnose common plant problems!")
-
+    
     while True:
         print("\n Plant Diagnosis System ")
         print("1. Yellow leaves")
@@ -398,15 +645,17 @@ def plant_diagnoses():
 # This function is not defined to use solely, ONLY inside main()
 def display_menu():
     """Display the main menu options."""
+    update_plant_frequencies()
     print("\n=== Garaden Manegar ===")
     print("1. Add a new plant to the collection")
     print("2. Record a plant care activity")
     print("3. View plants due for care")
     print("4. Search plants by name or location")
     print("5. View all plants")
-    print("6. Diagnose Plant Symptoms")
-    print("7. Exit")
-    return input("\nEnter your choice (1-7): ")
+    print("6. Update seasonal care schedule for a plant")
+    print("7. Diagnose Plant Symptoms")
+    print("8. Exit")
+    return input("\nEnter your choice (1-8): ")
 
 def main():
     """Main application function."""
@@ -427,8 +676,11 @@ def main():
         elif choice == '5':
             show()
         elif choice == '6':
-            plant_diagnoses()
+            update_season_care_freq()
         elif choice == '7':
+            plant_diagnoses()
+        elif choice == '8':
+
             print("\nThank you for using Garaden Manegar. Goodbye!")
             break
         else:
