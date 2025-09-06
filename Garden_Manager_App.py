@@ -1,6 +1,8 @@
 # Imports
 import csv
-from datetime import date, datetime , timedelta
+from datetime import datetime , timedelta, date
+from IPython.display import Image, display
+#This is a sample of the main python file
 
 # Initializing Lists
 care_file_name  = r"garden_activity.csv"
@@ -84,6 +86,23 @@ def new_plant():
 
     print("\033[1;32;48m Your plant has been added successfully!\033[0m")
     
+
+
+def nextID():
+    """Find next ID based on CSV table"""
+    last_id = 0 
+    for item in get_plant_content():
+        try:
+            if int(item[plant_field_name[0]]) > last_id:
+                last_id = int(item[plant_field_name[0]])
+        except:
+            pass
+    return last_id + 1
+
+# =====================================     
+# Team Member 2 Code, Abdulla: Function #2
+# =====================================  
+
 def get_plant_content():
     """Extract content of plant table and return it as list of dict"""
     try: 
@@ -110,16 +129,7 @@ def get_care_content():
         print(f"{care_file_name} is created.")
         return []
 
-def nextID():
-    """Find next ID based on CSV table"""
-    last_id = 0 
-    for item in get_plant_content():
-        try:
-            if int(item[plant_field_name[0]]) > last_id:
-                last_id = int(item[plant_field_name[0]])
-        except:
-            pass
-    return last_id + 1
+
 
 def check_id(pid):
     """
@@ -135,10 +145,10 @@ def check_id(pid):
         print("\033[1;31;48m Error while process the files.\033[0m")
         return False
 
-
-# =====================================     
-# Team Member 2 Code, Abdulla: Function #2
-# =====================================     
+def nextavailablefilename():
+    """find available image name to avoid name conflict"""
+    return "image"+str(len(get_care_content())+1)
+   
 def record_plant_care():
     """allow user to record activity for plants"""
 
@@ -174,9 +184,13 @@ def record_plant_care():
         while True : #image loop
             try:
                 image_path = input("Enter image path")
-                with open(image_path, "r") as file: # check if image exists
+                with open(image_path, "rb") as original: # check if image exists
+                    extension  = image_path.split(".")[-1]
+                    new_image_path = "./images/"+nextavailablefilename()+ "." + extension
+                    with open(new_image_path, "wb") as copy:
+                        copy.write(original.read())
                     break
-            except:
+            except FileNotFoundError:
                 print("\033[1;31;48m Enter valid image path.\033[0m")
 
     add_new_record(pid, activity_type=activity, activity_date=activity_date,
@@ -291,6 +305,14 @@ def show():
             csv1= csv.reader(file)
             for i in csv1:
                 print(i)
+        for item in get_care_content():
+            if item["Activity"] != "image":
+                print(f'plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
+        print("image gallery")
+        for item in get_care_content():
+            if item["Activity"] == "image" and item["image_path"].strip() != '':
+                print(f'image for plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
+                display(Image(filename=item["image_path"]))
     except:
         print("\033[1;31;48m File does not exist!\033[0m")
 
@@ -384,7 +406,7 @@ def display_menu():
     print("5. View all plants")
     print("6. Diagnose Plant Symptoms")
     print("7. Exit")
-    return input("\nEnter your choice (1-6): ")
+    return input("\nEnter your choice (1-7): ")
 
 def main():
     """Main application function."""
