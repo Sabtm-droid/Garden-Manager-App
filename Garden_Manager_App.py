@@ -2,6 +2,7 @@
 import csv
 from datetime import datetime , timedelta
 from datetime import date
+from IPython.display import Image, display
 #This is a sample of the main python file
 
 care_file_name  = r"garden_activity.csv"
@@ -223,6 +224,15 @@ def show():
             csv1= csv.reader(file)
             for i in csv1:
                 print(i)
+        
+        for item in get_care_content():
+            if item["Activity"] != "image":
+                print(f'plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
+        print("image gallery")
+        for item in get_care_content():
+            if item["Activity"] != "image" and item["image_path"] != '':
+                print(f'image for plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
+                display(Image(filename=item["image_path"]))
     except:
         print("File does not exist!")
 
