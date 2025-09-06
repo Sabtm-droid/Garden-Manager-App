@@ -406,7 +406,7 @@ def display_menu():
     print("5. View all plants")
     print("6. Diagnose Plant Symptoms")
     print("7. Exit")
-    return input("\nEnter your choice (1-6): ")
+    return input("\nEnter your choice (1-7): ")
 
 def main():
     """Main application function."""
