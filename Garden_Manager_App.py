@@ -507,19 +507,27 @@ def show():
 
         #This function will show all the plants in the garden
         
-        #with open('gardenapp.csv', 'r') as file:
-        #    csv1= csv.reader(file)
-         #   for i in csv1:
-          #      print(i)
+        # with open('gardenapp.csv', 'r') as file:
+        #     csv1= csv.reader(file)
+        #     for i in csv1:
+        #         print(i)
+        #    ["ID", "Plant_Name","Location","Date", "Frequency", "Sunlight_Need"]
+        print("ID\tname\tlocation")
+        for  item in get_plant_content():
+            print(f"{item['ID']}\t{item['Plant_Name']}\t{item['Location']}")
+
 
         for item in get_care_content():
             if item["Activity"] != "image":
                 print(f'plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
         print("image gallery")
         for item in get_care_content():
-            if item["Activity"] == "image" and item["image_path"].strip() != '':
-                print(f'image for plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
-                display(Image(filename=item["image_path"]))
+            try:
+                if item["Activity"] == "image" and item["image_path"].strip() != '':
+                    print(f'image for plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
+                    display(Image(filename=item["image_path"]))
+            except:
+                pass
     except:
         print("\033[1;31;48m File does not exist!\033[0m")
 
