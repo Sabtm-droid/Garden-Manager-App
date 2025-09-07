@@ -24,7 +24,10 @@ seasons_months = {
 # =====================================     
 # Team Member 3 Code, Abdulrahman: Strech #2, #4 and extra needed for it to work
 # ===================================== 
-def update_plant_frequencies():
+def enter_to_continue():
+    input('Press enter to continue:')
+
+def auto_update_plant_frequencies():
     '''This function updates the frequency of each plant, based on the season 
     and notifies the user if so; creates Seasonal_Changes.csv if not found.'''
 
@@ -452,6 +455,8 @@ def View_plants_due_for_care_per_activity():
         print(f'No plants need care, Nice Job!')
     print('-----------------------------------------------------------------------------')
 
+    enter_to_continue()
+
 # =====================================
 # Team Member 4 Code, Komail: Function #4
 # =====================================
@@ -487,33 +492,26 @@ def Search_Plants():
             
         if not found: 
             print("\033[1;31;48m Sorry, there is no plant with such name or location.\033[0m")
-
+    enter_to_continue()
 # =====================================
 # Team Member 5 Code, Mohammed: Function #5
 # =====================================
 def show():
     try:
 
-        # Abdulrahman added this to make the resault pretty 
-        #with open("gardenapp.csv", "r") as file:
-        #    reader = csv.reader(file)
-        #    rows = list(reader)
+        # Abdulrahman added this to make the resault pretty
+        #This function will show all the plants in the garden
+
+        with open("gardenapp.csv", "r") as file:
+            reader = csv.reader(file)
+            rows = list(reader)
 
         # First row is usually the header
-        #headers = rows[0]
-        #data = rows[1:]
+        headers = rows[0]
+        data = rows[1:]
 
         # Print formatted table
-        #print(tabulate(data, headers=headers, tablefmt="pretty"))
-
-        #This function will show all the plants in the garden
-        
-        #This function will show all the plants in the garden
-
-        with open('gardenapp.csv', 'r') as file:
-            csv1= csv.reader(file)
-            for i in csv1:
-                print(i)
+        print(tabulate(data, headers=headers, tablefmt="pretty"))
 
         for item in get_care_content():
             if item["Activity"] != "image":
@@ -523,9 +521,10 @@ def show():
             if item["Activity"] == "image" and item["image_path"].strip() != '':
                 print(f'image for plant {item["ID"]} get {item["Activity"]} at {item["Date"]}')
                 display(Image(filename=item["image_path"]))
+        enter_to_continue()
     except:
         print("\033[1;31;48m File does not exist!\033[0m")
-
+        enter_to_continue()
 
 # =====================================     
 # Team Member 4 Code, Komail: Strech #1
@@ -542,7 +541,10 @@ def add_plant_length(pid: int, length: float):
 
 # =====================================     
 # Team Member 2 Code, Abdulla: Strech #3
-# =====================================     
+# =====================================    
+def enter_to_continue():
+    input('Press enter to continue:')
+
 def add_new_record(pid, activity_type,activity_date=None, image_path=''):
     # ADD DOC string
     
@@ -637,6 +639,7 @@ def plant_diagnoses():
             break
         else:
             print("\033[1;31;48m Invalid choice. Please enter a number between 1 and 8.\033[0m")
+        enter_to_continue()
 
 
 # ==========================================================================
@@ -645,7 +648,7 @@ def plant_diagnoses():
 # This function is not defined to use solely, ONLY inside main()
 def display_menu():
     """Display the main menu options."""
-    update_plant_frequencies()
+    auto_update_plant_frequencies()
     print("\n=== Garaden Manegar ===")
     print("1. Add a new plant to the collection")
     print("2. Record a plant care activity")
