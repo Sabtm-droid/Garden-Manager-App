@@ -146,6 +146,7 @@ def add_seasonal_change(id_value, freq, answer):
                 "Transitions": transitions
             }
             writer.writerow(row)
+        auto_update_plant_frequencies()
 
 def update_season_care_freq():
     '''Enables the user to update seasonal frequency for each season for the choosen plant id by the user'''
