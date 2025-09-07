@@ -381,8 +381,10 @@ def record_plant_care():
                     new_image_path = "./images/"+nextavailablefilename()+ "." + extension
                     with open(new_image_path, "wb") as copy:
                         copy.write(original.read())
+                    image_path = new_image_path
                     break
-            except FileNotFoundError:
+            except FileNotFoundError as e:
+                print(e)
                 print("\033[1;31;48m Enter valid image path.\033[0m")
 
     add_new_record(pid, activity_type=activity, activity_date=activity_date,
