@@ -494,23 +494,23 @@ def show():
     try:
 
         # Abdulrahman added this to make the resault pretty 
-        #with open("gardenapp.csv", "r") as file:
-        #    reader = csv.reader(file)
-        #    rows = list(reader)
+        with open("gardenapp.csv", "r") as file:
+            reader = csv.reader(file)
+            rows = list(reader)
 
         # First row is usually the header
-        #headers = rows[0]
-        #data = rows[1:]
+        headers = rows[0]
+        data = rows[1:]
 
         # Print formatted table
-        #print(tabulate(data, headers=headers, tablefmt="pretty"))
+        print(tabulate(data, headers=headers, tablefmt="pretty"))
 
         #This function will show all the plants in the garden
         
-        with open('gardenapp.csv', 'r') as file:
-            csv1= csv.reader(file)
-            for i in csv1:
-                print(i)
+        #with open('gardenapp.csv', 'r') as file:
+        #    csv1= csv.reader(file)
+         #   for i in csv1:
+          #      print(i)
 
         for item in get_care_content():
             if item["Activity"] != "image":
